@@ -5,19 +5,14 @@ inventory = {
     },
     'Confidential': {
         'items': ['Prototype-X', 'Secret Docs'],
-        'is_restricted': True  # Only Admin/Manager can see this
+        'is_restricted': True
     }
 }
 
 def get_filtered_inventory(user_role):
-    """
-    Returns the inventory filtered by user permissions.
-    Observers cannot see restricted categories.
-    """
     if user_role == 'admin' or user_role == 'manager':
         return inventory
     
-    # If observer, filter out restricted categories
     filtered_data = {}
     for category, details in inventory.items():
         if not details['is_restricted']:
@@ -44,4 +39,14 @@ def add_item(category_name, item_name):
     if category_name in inventory:
         inventory[category_name]['items'].append(item_name)
         return True, "Item added."
+    return False, "Category not found."
+
+def delete_item(category_name, item_name):
+    if category_name in inventory:
+        items_list = inventory[category_name]['items']
+        if item_name in items_list:
+            items_list.remove(item_name)
+            return True, f"Item '{item_name}' removed from '{category_name}'."
+        else:
+            return False, "Item not found in this category."
     return False, "Category not found."
