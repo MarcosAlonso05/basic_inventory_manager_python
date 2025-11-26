@@ -1,5 +1,3 @@
-# Simulated user database
-# Format: username: {'password': password, 'role': role}
 users_db = {
     'admin': {'password': 'admin123', 'role': 'admin'},
     'boss':  {'password': 'manager123', 'role': 'manager'},

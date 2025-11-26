@@ -1,5 +1,3 @@
-# Simulated Inventory Structure
-# Keys are category names. Values are dicts with 'items' (list) and 'is_restricted' (bool)
 inventory = {
     'Electronics': {
         'items': ['Mouse', 'Keyboard'],
