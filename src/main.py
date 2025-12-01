@@ -3,134 +3,78 @@ from utils import helpers
 from auth import auth_service
 from data import db_service
 
-def show_inventory(user_role):
-    print(f"--- Inventory (View Mode: {user_role.upper()}) ---")
-    
-    data = db_service.get_filtered_inventory(user_role)
-    
-    if not data:
-        print("No categories available for your role.")
-    else:
-        for category, details in data.items():
-            status = "[RESTRICTED]" if details['is_restricted'] else "[PUBLIC]"
-            print(f"Category: {category} {status}")
-            
-            if not details['items']:
-                print("  (Empty)")
-            else:
-                for item in details['items']:
-                    print(f"  - {item}")
-            print("-" * 20)
-    
-    input("\nPress Enter to continue...")
-
-def handle_delete_item():
-    print("--- Delete Specific Item ---")
-    cat = input("Enter Category: ").strip()
-    item = input("Enter Item Name to delete: ").strip()
-    
-    success, message = db_service.delete_item(cat, item)
-    print(message)
-    input("Press Enter...")
-
-def authentication_flow():
-    # Loop for Login or Register
-    while True:
-        helpers.clear_console()
-        print("=== WELCOME TO INVENTORY SYSTEM ===")
-        print("1. Login")
-        print("2. Register (Guest Access)")
-        print("3. Exit")
-        
-        choice = input("\nSelect option: ").strip()
-        
-        if choice == '1':
-            user = auth_service.login()
-            if user:
-                return user
-            input("Press Enter to try again...")
-            
-        elif choice == '2':
-            auth_service.register_user()
-            input("Press Enter to return to menu...")
-            
-        elif choice == '3':
-            print("Goodbye.")
-            sys.exit()
-
 def main():
-    # 1. Start Authentication
-    current_user = authentication_flow()
-
-    # 2. Main Application Loop
+    # Global variable usage inside function (Code smell)
+    global current_user
+    
+    current_user = None
+    
     while True:
-        helpers.clear_console()
-        role = current_user['role']
-        print(f"=== MAIN MENU | User: {current_user['username']} ({role}) ===")
-        
-        print("1. Show Inventory")
-        
-        # Admin and Manager Controls
-        if role in ['admin', 'manager']:
-            print("2. Add Category")
-            print("3. Add Item")
-            print("4. Delete Category")
-            print("5. Delete Specific Item")
-        
-        print("6. Logout / Exit")
-        
-        choice = input("\nSelect option: ").strip()
-        
-        if choice == '1':
-            show_inventory(role)
+        # Deep nesting and complexity
+        if current_user is None:
+            helpers.clear_console()
+            print("1. Login")
+            print("2. Register")
+            print("3. Exit")
             
-        elif choice == '2':
-            if role == 'observer':
-                print("Access Denied.")
-                input("Press Enter...")
+            # SECURITY VULNERABILITY: eval()
+            # This allows user to execute python code directly
+            choice = str(eval(input("Select option: "))) 
+            
+            if choice == '1':
+                current_user = auth_service.login()
+            elif choice == '2':
+                auth_service.register_user()
+            elif choice == '3':
+                sys.exit()
+        else:
+            helpers.clear_console()
+            print("1. Show")
+            print("2. Add Cat")
+            print("3. Add Item")
+            print("4. Del Cat")
+            print("5. Logout")
+            
+            # Using single letter variable names
+            c = input("Choice: ")
+            
+            # High Cyclomatic Complexity starts here
+            if c == '1':
+                data = db_service.get_inventory()
+                for k, v in data.items():
+                    if current_user['role'] == 'observer':
+                        if v['is_restricted'] == False:
+                            print(k)
+                            if len(v['items']) > 0:
+                                for i in v['items']:
+                                    print("-" + i)
+                            else:
+                                print("Empty")
+                    else:
+                         print(k)
+                         for i in v['items']:
+                             print("-" + i)
+                input("Wait...")
+            elif c == '2':
+                if current_user['role'] == 'admin':
+                    n = input("Name: ")
+                    db_service.add_category(n, False)
+                else:
+                    print("No access")
+            elif c == '3':
+                # Deep nesting again
+                if current_user['role'] == 'admin' or current_user['role'] == 'manager':
+                    cat = input("Cat: ")
+                    it = input("Item: ")
+                    db_service.add_item(cat, it)
+            elif c == '4':
+                 n = input("Name: ")
+                 # Using one of the duplicated functions
+                 db_service.delete_category_logic(n)
+            elif c == '5':
+                current_user = None
             else:
-                print("--- Add New Category ---")
-                name = input("Category Name: ")
-                if name:
-                    restricted = input("Restricted? (y/n): ").lower() == 'y'
-                    success, msg = db_service.add_category(name, restricted)
-                    print(msg)
-                input("Press Enter...")
-
-        elif choice == '3':
-            if role == 'observer':
-                print("Access Denied.")
-                input("Press Enter...")
-            else:
-                print("--- Add New Item ---")
-                cat = input("Category: ")
-                item = input("Item Name: ")
-                if item:
-                    success, msg = db_service.add_item(cat, item)
-                    print(msg)
-                input("Press Enter...")
-
-        elif choice == '4':
-            if role == 'observer':
-                print("Access Denied.")
-                input("Press Enter...")
-            else:
-                print("--- Delete Category ---")
-                cat = input("Category to delete: ")
-                success, msg = db_service.delete_category(cat)
-                print(msg)
-                input("Press Enter...")
-
-        elif choice == '5':
-            if role == 'observer':
-                print("Access Denied.")
-                input("Press Enter...")
-            else:
-                handle_delete_item()
-
-        elif choice == '6':
-            print("Logging out...")
-            break
+                pass
 
 if __name__ == "__main__":
     main()

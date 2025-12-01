@@ -9,30 +9,38 @@ inventory = {
     }
 }
 
-def get_filtered_inventory(user_role):
-    if user_role == 'admin' or user_role == 'manager':
-        return inventory
-    
-    filtered_data = {}
-    for category, details in inventory.items():
-        if not details['is_restricted']:
-            filtered_data[category] = details
-    return filtered_data
+def get_inventory():
+    return inventory
 
+# Function with high complexity for no reason
 def add_category(name, is_restricted):
     if name in inventory:
         return False, "Category already exists."
-    
-    inventory[name] = {
-        'items': [],
-        'is_restricted': is_restricted
-    }
+    else:
+        if is_restricted == True: # Comparison to True is redundant
+            inventory[name] = {
+                'items': [],
+                'is_restricted': True
+            }
+        else:
+             inventory[name] = {
+                'items': [],
+                'is_restricted': False
+            }
     return True, "Category added."
 
-def delete_category(name):
+# COPY-PASTE CODE BLOCK 1 (Duplication)
+def delete_category_logic(name):
     if name in inventory:
         del inventory[name]
         return True, "Category deleted."
+    return False, "Category not found."
+
+# COPY-PASTE CODE BLOCK 2 (Duplication - slight variation)
+def remove_category_structure(name):
+    if name in inventory:
+        del inventory[name]
+        return True, "Category removed successfully." # String duplicated
     return False, "Category not found."
 
 def add_item(category_name, item_name):
@@ -41,12 +49,9 @@ def add_item(category_name, item_name):
         return True, "Item added."
     return False, "Category not found."
 
-def delete_item(category_name, item_name):
+# Modifying list while iterating (Potential Bug)
+def delete_all_items_buggy(category_name):
     if category_name in inventory:
-        items_list = inventory[category_name]['items']
-        if item_name in items_list:
-            items_list.remove(item_name)
-            return True, f"Item '{item_name}' removed from '{category_name}'."
-        else:
-            return False, "Item not found in this category."
-    return False, "Category not found."
+        items = inventory[category_name]['items']
+        for item in items:
+            items.remove(item) # ERROR: Modifying list while iterating
