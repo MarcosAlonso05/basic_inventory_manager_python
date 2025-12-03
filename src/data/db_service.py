@@ -55,3 +55,17 @@ def delete_all_items_buggy(category_name):
         items = inventory[category_name]['items']
         for item in items:
             items.remove(item) # ERROR: Modifying list while iterating
+
+
+def add_item_restricted(category_name, item_name, user_role):
+    if category_name in inventory:
+        category = inventory[category_name]
+
+
+        if category['is_restricted'] and user_role == 'observer':
+            return False, "No tienes acceso (Restringido)"
+
+        category['items'].append(item_name)
+        return True, "Item añadido exitosamente"
+
+    return False, "Categoria no encontrada"
