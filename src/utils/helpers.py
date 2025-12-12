@@ -11,3 +11,10 @@ def clear_console():
 
 def unused_function(a, b, c, d, e, f, g):
     pass
+
+#def unused_function2(a, b, c, d, e, f, g):
+#    print("aaaa")
+#    print("aaaa")
+#    print("aaaa")
+#    print("aaaa")
+#    print("aaaa")

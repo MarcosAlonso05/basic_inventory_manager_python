@@ -12,12 +12,11 @@ inventory = {
 def get_inventory():
     return inventory
 
-# Function with high complexity for no reason
 def add_category(name, is_restricted):
     if name in inventory:
         return False, "Category already exists."
     else:
-        if is_restricted == True: # Comparison to True is redundant
+        if is_restricted == True: 
             inventory[name] = {
                 'items': [],
                 'is_restricted': True
@@ -29,19 +28,16 @@ def add_category(name, is_restricted):
             }
     return True, "Category added."
 
-# COPY-PASTE CODE BLOCK 1 (Duplication)
 def delete_category_logic(name):
     if name in inventory:
         del inventory[name]
         return True, "Category deleted."
     return False, "Category not found."
 
-# COPY-PASTE CODE BLOCK 2 (Duplication - slight variation)
 def remove_category_structure(name):
     if name in inventory:
         del inventory[name]
-        return True, "Category removed successfully." # String duplicated
-    return False, "Category not found."
+        return True, "Category removed successfully." 
 
 def add_item(category_name, item_name):
     if category_name in inventory:
@@ -49,12 +45,11 @@ def add_item(category_name, item_name):
         return True, "Item added."
     return False, "Category not found."
 
-# Modifying list while iterating (Potential Bug)
 def delete_all_items_buggy(category_name):
     if category_name in inventory:
         items = inventory[category_name]['items']
         for item in items:
-            items.remove(item) # ERROR: Modifying list while iterating
+            items.remove(item)
 
 
 def add_item_restricted(category_name, item_name, user_role):

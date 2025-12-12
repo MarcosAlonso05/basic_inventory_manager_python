@@ -7,7 +7,6 @@ from data import db_service
 
 @pytest.fixture(autouse=True)
 def setup_inventory():
-    # Reinicia el inventario antes de cada prueba
     db_service.inventory = {
         'Electronics': {
             'items': ['Mouse', 'Keyboard'],

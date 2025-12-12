@@ -4,7 +4,6 @@ from auth import auth_service
 from data import db_service
 
 def main():
-    # Global variable usage inside function (Code smell)
     global current_user
     
     current_user = None
@@ -17,8 +16,6 @@ def main():
             print("2. Register")
             print("3. Exit")
             
-            # SECURITY VULNERABILITY: eval()
-            # This allows user to execute python code directly
             choice = str(eval(input("Select option: "))) 
             
             if choice == '1':
@@ -38,7 +35,6 @@ def main():
             # Using single letter variable names
             c = input("Choice: ")
             
-            # High Cyclomatic Complexity starts here
             if c == '1':
                 data = db_service.get_inventory()
                 for k, v in data.items():
@@ -62,14 +58,12 @@ def main():
                 else:
                     print("No access")
             elif c == '3':
-                # Deep nesting again
                 if current_user['role'] == 'admin' or current_user['role'] == 'manager':
                     cat = input("Cat: ")
                     it = input("Item: ")
                     db_service.add_item(cat, it)
             elif c == '4':
                  n = input("Name: ")
-                 # Using one of the duplicated functions
                  db_service.delete_category_logic(n)
             elif c == '5':
                 current_user = None

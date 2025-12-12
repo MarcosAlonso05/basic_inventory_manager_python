@@ -4,8 +4,6 @@ from auth import auth_service
 
 
 def test_register_duplicate_user(monkeypatch):
-    # Prueba unitaria: register_user detecta duplicados
-    # Usamos monkeypatch para simular que el usuario escribe 'admin'
     responses = iter(['admin', 'pass123'])
     monkeypatch.setattr('builtins.input', lambda msg: next(responses))
 
@@ -15,7 +13,6 @@ def test_register_duplicate_user(monkeypatch):
 
 
 def test_add_category_success():
-    # Prueba unitaria: agregar categoria funciona correctamente
     cat_name = "Books"
     is_restricted = False
 
@@ -27,9 +24,6 @@ def test_add_category_success():
 
 
 def test_delete_all_items_buggy_behavior():
-    # Prueba unitaria: Documentar el bug
-    # El codigo original tiene un error al modificar la lista mientras itera
-    # Configuramos una categoria para prueba
     db_service.inventory['BugTest'] = {
         'items': ['Item1', 'Item2', 'Item3'],
         'is_restricted': False
@@ -39,5 +33,4 @@ def test_delete_all_items_buggy_behavior():
 
     remaining_items = db_service.inventory['BugTest']['items']
 
-    # Assert: Confirmamos que el bug existe (la lista NO queda vacia)
     assert len(remaining_items) > 0
